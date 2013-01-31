@@ -1,6 +1,7 @@
 #include<stdio.h>
 int main(){
-printf("success")
+printf("vmstack ");
+
 return 1;
 
 }

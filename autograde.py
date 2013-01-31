@@ -49,7 +49,21 @@ def parseOutput(output,keywordFile) :
 		return 0
 	return count	
 #end of parseOutput		
-
+#start of parseSource
+def parseSource(sourceFile,keywordFile):
+	try:
+		fin=open(sourceFile,"r")
+		keyfile=open(keywordFile,"r")
+		source=fin.read()
+		count=0
+		for key in keyfile.readlines():
+			if source.strip().lower().find(key.strip().lower())>=0:
+				count=count+1
+		print "for file"+sourceFile+ str(count)
+	except IOError:
+		print "file not found"
+		return 0
+	return count
 #start of assignScore. assigns scores on the basis of number of keywords found. 
 def assignScore(numKeys):
 	if numKeys==0:
@@ -81,7 +95,8 @@ for fileName  in listOfFiles:
 	
 		writeToLog("Successful compilation for "+ fileName) 
 		output=executeFile(fileName)
-		numKeys= parseOutput(output,"keyword.txt")
+		#numKeys= parseOutput(output,"keyword.txt")
+		numKeys=parseSource(fileName,"srcKeyword.txt")
 		writeToLog("in file " +fileName+" number of keywords found = "+str(numKeys))
 		
 	else :

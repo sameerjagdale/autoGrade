@@ -23,16 +23,23 @@ def parseOutput(output,keywordFile) :
 	try:
 		fin=open(keywordFile,"r")
 		count=0
+		#num=0
+		#num1=0
+		#print "number of lines read"+str(len(fin.readlines()))
 		for keyword in fin.readlines():
-			
+			#num=num+1
+			#num1=0
+			#print keyword
 			for line in output:
-				
-				if line.lower().strip().find(keyword.strip())>=0:
+				#num1=num1+1
+				if line.lower().strip().find(keyword.lower().strip())>=0:
 					count=count+1
-					print keyword
+					#print keyword
 					break
+			#print "num1="+str(num1)
 		fin.close()
-		print "count="+str(count)
+		#print "num="+str(num)
+		#print "1st count="+str(count)
 	except IOError:
 		print "keyword file not found"
 		return 0
@@ -66,7 +73,7 @@ for fileName  in listOfFiles:
 		print "output: "
 		output=executeFile(fileName)
 		numKeys= parseOutput(output,"keyword.txt")
-		print numKeys
+		print "number of keys found "+str(numKeys)
 		
 	else :
 		print "error in compilation for:"+fileName

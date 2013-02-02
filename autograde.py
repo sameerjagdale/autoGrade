@@ -1,17 +1,16 @@
 import subprocess
 import glob
 import datetime
-
-
+import os
 #start of executeFile . Function executes compiled file and return output
 def executeFile(fileName) :
-        p=subprocess.Popen("./"+fileName.split(".")[0], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p=subprocess.Popen("./a.out", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	return p.stdout.readlines()
 #end of executeFile 
 
 # start of extract name. Function extracts student name from the file name passed as an argument. 	
 def extractName(fileName):
-	return fileName.split("_")[0]
+	return fileName.split("-")[0]
 #end of extractName 
 
 #start of writeToLog. Writes given message to log after appending date and time 
@@ -27,7 +26,11 @@ def hasError(output,word):
 			return True
 	return False
 #end of hasError
-
+def remSpace(fileName):
+	lst=fileName.split(" ")
+	newFileName="".join(lst)
+	os.rename(fileName,newFileName)
+	return newFileName
 #start of parseOutput.parses output for keywords present  in the file . 
 def parseOutput(output,keywordFile) :
 	try:
@@ -36,7 +39,6 @@ def parseOutput(output,keywordFile) :
 		for keyword in fin.readlines():
 			
 			for line in output:
-				
 				if line.lower().strip().find(keyword.lower().strip())>=0:
 					count=count+1
 					
@@ -68,10 +70,10 @@ def parseSource(sourceFile,keywordFile):
 def assignScore(numKeys):
 	if numKeys==0:
 		return 80
-	elif numKeys ==1:
-		return 95
-	elif numKeys ==2:
-		return 95
+	#elif numKeys ==1:
+	#	return 95
+	#elif numKeys ==2:
+	#	return 100
 	else:
 		return 100
 #end of assignscore
@@ -87,23 +89,29 @@ i=1
 listOfFiles=list()
 listOfFiles=glob.glob("*.c");
 
+
 for fileName  in listOfFiles:
 	numKeys=0
-	p=subprocess.Popen("gcc -o"+fileName.split('.')[0]+" "+fileName, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	print fileName
+	newFileName=remSpace(fileName)
+	p=subprocess.Popen("gcc" +" "+newFileName.strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	output=p.stdout.readlines()	
 	if not hasError(output,"error"):
 	
 		writeToLog("Successful compilation for "+ fileName) 
 		output=executeFile(fileName)
-		#numKeys= parseOutput(output,"keyword.txt")
-		numKeys=parseSource(fileName,"srcKeyword.txt")
+		numKeys= parseOutput(output,"keyword.txt")
+		#numKeys=parseSource(newFileName,"srcKeyword.txt")
 		writeToLog("in file " +fileName+" number of keywords found = "+str(numKeys))
-		
+		print numKeys
 	else :
 		writeToLog("error in compilation for:"+fileName)
+		#print output
+		#break
 	name=extractName(fileName)
 	score=assignScore(numKeys)
-	writeToFile(name,score)
+	print score
+	writeToFile(name.strip(),score)
 		
 retval = p.wait()
  # end of script
